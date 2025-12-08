@@ -1,0 +1,3 @@
+/home/hou/chatroom_server/chatServer/build/CMakeFiles/rebuild_cache.dir
+/home/hou/chatroom_server/chatServer/build/CMakeFiles/ChatServer.dir
+/home/hou/chatroom_server/chatServer/build/CMakeFiles/edit_cache.dir
