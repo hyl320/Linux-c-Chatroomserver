@@ -65,8 +65,9 @@ chatServer::chatServer(const char *ip, int port, size_t threadPoolSize)
         return;
     }
 
-    // 6. 启动工作线程池
+    // 6. 启动工作线程池与心跳检查器
     startThreadPool(threadPoolSize);
+    startHeartbeatChecker();
     std::cout << "[Server] Started successfully on " << ip << ":" << port
               << " with " << threadPoolSize << " worker threads." << std::endl;
 }
@@ -86,6 +87,9 @@ void chatServer::stopServer() {
         if (worker.joinable()) {
             worker.join();
         }
+    }
+    if (heartbeat_thread.joinable()) {
+        heartbeat_thread.join();
     }
 
     std::unique_lock<std::mutex> lock(client_mutex);
@@ -129,6 +133,39 @@ void chatServer::startThreadPool(size_t numThreads) {
                 }
             }
         });
+    }
+}
+
+void chatServer::startHeartbeatChecker() {
+    heartbeat_thread = std::thread([this] {
+        heartbeatCheckLoop();
+    });
+}
+
+void chatServer::heartbeatCheckLoop() {
+    while (!stop.load()) {
+        // 每 5 秒轮询检查一次
+        for (int i = 0; i < 50; ++i) {
+            if (stop.load()) return;
+            usleep(100000); // 100ms
+        }
+
+        uint64_t now = getCurrentTimeMs();
+        std::vector<int> timedOutFds;
+        {
+            std::unique_lock<std::mutex> lock(client_mutex);
+            for (const auto &pair : clients) {
+                // 30 秒无通信视为死连接
+                if (now - pair.second.last_heartbeat > 30000) {
+                    timedOutFds.push_back(pair.first);
+                }
+            }
+        }
+
+        for (int fd : timedOutFds) {
+            std::cout << "[Server] Client inactive for 30s, force purging fd=" << fd << std::endl;
+            onClientDisconnect(fd);
+        }
     }
 }
 

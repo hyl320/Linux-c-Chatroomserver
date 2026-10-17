@@ -68,6 +68,11 @@ private:
     std::mutex task_mutex;
     std::condition_variable task_cv;
 
+    // 心跳超时巡检线程
+    std::thread heartbeat_thread;
+    void startHeartbeatChecker();
+    void heartbeatCheckLoop();
+
     void startThreadPool(size_t numThreads);
     void addTask(std::function<void()> task);
 
