@@ -1,20 +1,41 @@
+#include <iostream>
+#include <csignal>
+#include <cstdlib>
+#include "chatServer.h"
 
-#include"chatServer.h"
+static Chat::chatServer* g_server = nullptr;
+
+void signalHandler(int sig) {
+    std::cout << "\n[Server] Caught signal " << sig << ", shutting down gracefully..." << std::endl;
+    if (g_server) {
+        g_server->stopServer();
+    }
+}
 
 int main(int argc, char const *argv[])
 {
-    if(argc < 3)
-    {
-        cout<<"请输入ip地址和端口号"<<endl;
-        return 0;
+    std::string ip = "0.0.0.0";
+    int port = 8888;
+
+    if (argc >= 3) {
+        ip = argv[1];
+        port = std::atoi(argv[2]);
+    } else if (argc == 2) {
+        port = std::atoi(argv[1]);
+    } else {
+        std::cout << "Usage: " << argv[0] << " [ip] <port>" << std::endl;
+        std::cout << "Defaulting to 0.0.0.0:8888" << std::endl;
     }
-    //传参正确 构造一个服务器
-    chatServer server(argv[1],atoi(argv[2]));
 
-    //启动服务器
+    signal(SIGINT, signalHandler);
+    signal(SIGTERM, signalHandler);
 
+    Chat::chatServer server(ip.c_str(), port, 4);
+    g_server = &server;
 
     server.run();
 
+    g_server = nullptr;
+    std::cout << "[Server] Stopped cleanly." << std::endl;
     return 0;
 }
