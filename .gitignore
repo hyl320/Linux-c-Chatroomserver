@@ -1,8 +1,8 @@
-# 编译生成的文件
-*.o               # 编译过程中生成的目标文件
+# 编译生成的目标与库文件
+*.o
 *.obj
-*.so              # 动态链接库
-*.a               # 静态链接库
+*.so
+*.a
 *.lo
 *.la
 *.dll
@@ -10,42 +10,38 @@
 *.pdb
 *.lib
 *.exp
-*.gch             # 预编译头文件
+*.gch
 
-# CMake生成的文件
-CMakeFiles/       # CMake生成的构建目录
-CMakeCache.txt    # CMake缓存文件
-Makefile          # Makefile文件
-*.cmake           # CMake配置文件
+# CMake 与构建产物目录
+CMakeFiles/
+CMakeCache.txt
+Makefile
+*.cmake
+build/
+bin/
+out/
 
-# 编译生成的可执行文件
-/build/           # 构建输出目录
-/out/             # 编译后的输出文件夹
-
-# IDE相关文件
-.idea/            # JetBrains系列IDE (如IntelliJ IDEA, CLion)的项目文件
-.vscode/          # VSCode的工作区文件
-*.pro.user        # Qt Creator的项目设置文件
-
-# 临时文件
-*.swp             # Vim等编辑器产生的临时文件
+# IDE 与编辑器文件
+.idea/
+.vscode/
+*.pro.user
+*.swp
 *.swo
 *.bak
 *.tmp
 *.log
-*.~*              # 临时备份文件
-*~                # 临时文件
+*.~*
+*~
 
-# 编译器缓存和编译过程中产生的临时文件
+# 依赖与编译缓存
 *.cxx
-*.d               # 依赖文件
-*.dep             # 依赖文件
+*.d
+*.dep
+*.stackdump
 
-# 数据库文件
-*.db              # SQLite等数据库文件
-
-# 其他
-*.user            # 用户相关配置文件
+# 辅助配置与临时目录
+*.user
 *.user.*
 *.db
-*.stackdump       # GCC/Clang生成的错误转储文件
+.agnet/
+.agent/
